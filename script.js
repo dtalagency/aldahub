@@ -31,83 +31,96 @@ navbarMenu.querySelectorAll('a').forEach(link => {
   });
 });
 
-// Service Carousel Pagination
-const serviceCarousel = document.getElementById('service-carousel');
-const serviceItems = serviceCarousel.querySelectorAll('.service');
-const servicePagination = document.getElementById('service-pagination');
+/**
+ * Sets up a carousel with pagination dots for mobile view.
+ * @param {HTMLElement} carouselElement The main container of the carousel items.
+ * @param {HTMLElement} paginationElement The container for the pagination dots.
+ * @param {string} itemSelector The CSS selector for individual carousel items within the carouselElement.
+ */
+function setupMobileCarousel(carouselElement, paginationElement, itemSelector) {
+  const items = carouselElement.querySelectorAll(itemSelector);
 
-// Generate dots dynamically
-// This part only runs if the screen is mobile (<= 768px)
-if (window.innerWidth < 768) {
-  serviceItems.forEach((item, index) => {
-    const dot = document.createElement('div');
-    dot.classList.add('pagination-dot');
-    dot.dataset.index = index; // Store index for reference
-    servicePagination.appendChild(dot);
+  // Clear existing dots to prevent duplicates on resize/reload
+  paginationElement.innerHTML = '';
 
-    dot.addEventListener('click', () => {
-      const targetItem = serviceItems[index];
-      // Get the computed padding-left of the scroll container
-      const containerPaddingLeft = parseFloat(getComputedStyle(serviceCarousel).paddingLeft);
-      
-      // Calculate the scroll position: item's offsetLeft minus container's padding-left
-      // This aligns the *visual start* of the item with the *visual start* of the scrollable area
-      const targetScrollLeft = targetItem.offsetLeft - containerPaddingLeft;
-      
-      serviceCarousel.scrollTo({
-        left: targetScrollLeft,
-        behavior: 'smooth'
+  // Generate dots dynamically only if on mobile
+  if (window.innerWidth < 768) {
+    items.forEach((item, index) => {
+      const dot = document.createElement('div');
+      dot.classList.add('pagination-dot');
+      dot.dataset.index = index; // Store index for reference
+      paginationElement.appendChild(dot);
+
+      dot.addEventListener('click', () => {
+        const targetItem = items[index];
+        // Get the computed padding-left of the scroll container
+        const containerPaddingLeft = parseFloat(getComputedStyle(carouselElement).paddingLeft);
+        
+        // Calculate the scroll position: item's offsetLeft minus container's padding-left
+        const targetScrollLeft = targetItem.offsetLeft - containerPaddingLeft;
+        
+        carouselElement.scrollTo({
+          left: targetScrollLeft,
+          behavior: 'smooth'
+        });
       });
     });
-  });
-}
-
-
-const paginationDots = servicePagination.querySelectorAll('.pagination-dot');
-
-// Function to update active dot based on scroll position
-function updateActiveDot() {
-  if (window.innerWidth >= 768) { // Only run on mobile (or smaller screens)
-    paginationDots.forEach(dot => dot.classList.remove('active')); // Remove active from all dots
-    servicePagination.style.display = 'none'; // Hide pagination on desktop
-    return; // Exit if not on mobile
+    paginationElement.style.display = 'flex'; // Show pagination
   } else {
-    servicePagination.style.display = 'flex'; // Show pagination on mobile
+    paginationElement.style.display = 'none'; // Hide pagination on desktop
   }
 
-  const carouselScrollLeft = serviceCarousel.scrollLeft;
-  const containerPaddingLeft = parseFloat(getComputedStyle(serviceCarousel).paddingLeft);
-  
-  let activeIndex = 0;
-  let minDistance = Infinity;
+  const paginationDots = paginationElement.querySelectorAll('.pagination-dot');
 
-  serviceItems.forEach((item, index) => {
-    // Calculate the item's start position relative to the scroll container's content area
-    const itemVisualStart = item.offsetLeft - containerPaddingLeft;
+  // Function to update active dot based on scroll position
+  function updateActiveDot() {
+    if (window.innerWidth >= 768) {
+      paginationDots.forEach(dot => dot.classList.remove('active'));
+      return;
+    }
+
+    const carouselScrollLeft = carouselElement.scrollLeft;
+    const containerPaddingLeft = parseFloat(getComputedStyle(carouselElement).paddingLeft);
     
-    // Distance from current scroll position to where this item should be
-    const distance = Math.abs(carouselScrollLeft - itemVisualStart);
+    let activeIndex = 0;
+    let minDistance = Infinity;
 
-    if (distance < minDistance) {
-      minDistance = distance;
-      activeIndex = index;
-    }
-  });
+    items.forEach((item, index) => {
+      const itemVisualStart = item.offsetLeft - containerPaddingLeft;
+      const distance = Math.abs(carouselScrollLeft - itemVisualStart);
 
-  paginationDots.forEach((dot, index) => {
-    if (index === activeIndex) {
-      dot.classList.add('active');
-    } else {
-      dot.classList.remove('active');
-    }
-  });
+      if (distance < minDistance) {
+        minDistance = distance;
+        activeIndex = index;
+      }
+    });
+
+    paginationDots.forEach((dot, index) => {
+      if (index === activeIndex) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+
+  // Initial active dot setup
+  updateActiveDot();
+
+  // Update active dot on scroll
+  carouselElement.addEventListener('scroll', updateActiveDot);
 }
 
-// Initial active dot setup
-updateActiveDot();
+// Initialize Service Carousel
+const serviceCarousel = document.getElementById('service-carousel');
+const servicePagination = document.getElementById('service-pagination');
+setupMobileCarousel(serviceCarousel, servicePagination, '.service');
 
-// Update active dot on scroll
-serviceCarousel.addEventListener('scroll', updateActiveDot);
+// Initialize Team Carousel
+const teamCarousel = document.getElementById('team-carousel');
+const teamPagination = document.getElementById('team-pagination');
+setupMobileCarousel(teamCarousel, teamPagination, '.team-member');
+
 
 // FAQ Accordion (Mobile Only)
 const faqQuestions = document.querySelectorAll('.faq-question');
@@ -169,6 +182,10 @@ footerToggles.forEach(toggle => {
 
 // Handle resize event for all accordions and service carousel pagination
 window.addEventListener('resize', () => {
+  // Re-setup carousels on resize to handle desktop/mobile transitions
+  setupMobileCarousel(serviceCarousel, servicePagination, '.service');
+  setupMobileCarousel(teamCarousel, teamPagination, '.team-member');
+
   if (window.innerWidth >= 768) {
     // Reset footer accordions for desktop
     document.querySelectorAll('.footer-content').forEach(content => {
@@ -185,7 +202,6 @@ window.addEventListener('resize', () => {
         icon.classList.add('fa-plus');
       }
     });
-    servicePagination.style.display = 'none'; // Hide pagination on desktop
   } else {
     // Ensure accordions are collapsed and icons are correct on mobile
     document.querySelectorAll('.footer-content').forEach(content => {
@@ -202,12 +218,10 @@ window.addEventListener('resize', () => {
         }
       }
     });
-    servicePagination.style.display = 'flex'; // Show pagination on mobile
   }
-  updateActiveDot(); // Re-evaluate active dot for services on resize
 });
 
-// Initial state for footer and FAQ on load (if loaded on mobile)
+// Initial state for accordions and carousels on load
 window.addEventListener('load', () => {
   if (window.innerWidth < 768) {
     document.querySelectorAll('.footer-content').forEach(content => {
@@ -222,29 +236,10 @@ window.addEventListener('load', () => {
         icon.classList.add('fa-plus');
       }
     });
-    // Generate dots for service carousel only on mobile load
-    serviceItems.forEach((item, index) => {
-      const dot = document.createElement('div');
-      dot.classList.add('pagination-dot');
-      dot.dataset.index = index; // Store index for reference
-      servicePagination.appendChild(dot);
-
-      dot.addEventListener('click', () => {
-        const targetItem = serviceItems[index];
-        const containerPaddingLeft = parseFloat(getComputedStyle(serviceCarousel).paddingLeft);
-        const targetScrollLeft = targetItem.offsetLeft - containerPaddingLeft;
-        
-        serviceCarousel.scrollTo({
-          left: targetScrollLeft,
-          behavior: 'smooth'
-        });
-      });
-    });
-    updateActiveDot(); // Initial active dot setup for mobile
   } else {
     document.querySelectorAll('.footer-content').forEach(content => {
       content.style.maxHeight = null; // Ensure expanded on desktop
-      const icon = content.previousElementSibling.querySelector('.toggle-icon');
+      const icon = content.previousElementSibling.querySelector('.toggle-toggle');
       if (icon) icon.textContent = ''; // No icon on desktop
     });
     document.querySelectorAll('.faq-answer').forEach(answer => {
@@ -255,6 +250,8 @@ window.addEventListener('load', () => {
         icon.classList.add('fa-plus');
       }
     });
-    servicePagination.style.display = 'none'; // Hide pagination on desktop
   }
+  // Initial setup for carousels on load
+  setupMobileCarousel(serviceCarousel, servicePagination, '.service');
+  setupMobileCarousel(teamCarousel, teamPagination, '.team-member');
 });
