@@ -180,23 +180,21 @@ h1, h2, h3 {
 }
 
 /* --- Services Section --- */
-.services-carousel {
+.services-container { /* Renamed from .services-carousel for clarity on desktop */
   display: flex;
-  justify-content: flex-start; /* Align items to start for scrolling */
-  flex-wrap: nowrap; /* Prevent wrapping on mobile */
-  overflow-x: auto; /* Enable horizontal scrolling */
-  scroll-snap-type: x mandatory; /* Snap to items */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  gap: 20px; /* Use gap for spacing between items */
-  padding: 0 20px 20px; /* Add horizontal padding to the carousel container itself */
-  box-sizing: border-box; /* Ensure padding is included in width */
+  justify-content: space-around; /* Distribute items evenly */
+  flex-wrap: wrap; /* Allow items to wrap on desktop */
+  gap: 30px; /* Space between items */
   margin-top: 40px;
+  padding: 0; /* Remove padding here for desktop */
+  overflow-x: visible; /* Ensure content is visible on desktop */
+  scroll-snap-type: none; /* Disable snap on desktop */
 }
 
 .service {
-  flex-shrink: 0; /* Prevent items from shrinking */
-  width: calc(100vw - 40px); /* 100vw - (padding-left + padding-right) of .services-carousel */
-  scroll-snap-align: start; /* Snap to the start of each item */
+  flex: 1; /* Allow items to grow and shrink */
+  min-width: 280px;
+  max-width: 350px; /* Max width for each service item */
   padding: 30px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -216,7 +214,7 @@ h1, h2, h3 {
 
 /* Services Section Mobile Slide - Pagination */
 .service-pagination {
-  display: flex;
+  display: flex; /* Displayed by default, hidden by JS on desktop */
   justify-content: center;
   margin-top: 20px;
   gap: 10px;
@@ -656,7 +654,22 @@ footer {
   }
 
   /* Services Section Mobile Slide */
-  /* Already optimized for mobile in general styles */
+  .services-container { /* Renamed from .services-carousel for clarity on desktop */
+    flex-wrap: nowrap; /* Prevent wrapping on mobile */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    scroll-snap-type: x mandatory; /* Snap to items */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    justify-content: flex-start; /* Align items to start for scrolling */
+    gap: 20px; /* Use gap for spacing between items */
+    padding: 0 20px 20px; /* Add horizontal padding to the carousel container itself */
+    box-sizing: border-box; /* Ensure padding is included in width */
+  }
+
+  .service {
+    flex-shrink: 0; /* Prevent items from shrinking */
+    width: calc(100vw - 40px); /* 100vw - (padding-left + padding-right) of .services-carousel */
+    scroll-snap-align: start; /* Snap to the start of each item */
+  }
 
   /* Team Section Mobile */
   .team-members {
@@ -748,7 +761,7 @@ footer {
   .footer-content {
     max-height: 0; /* Hidden by default */
     overflow: hidden;
-    transition: max-height 0.3s ease-out; /* Smooth transition for expand/collapse */
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
     padding: 0 20px; /* Padding for content */
     background-color: rgba(255, 255, 255, 0.02); /* Slightly darker content background */
   }
