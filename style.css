@@ -180,7 +180,7 @@ h1, h2, h3 {
 }
 
 /* --- Services Section --- */
-.services-container { /* Renamed from .services-carousel for clarity on desktop */
+.services-container {
   display: flex;
   justify-content: space-around; /* Distribute items evenly */
   flex-wrap: wrap; /* Allow items to wrap on desktop */
@@ -235,12 +235,15 @@ h1, h2, h3 {
 }
 
 /* --- Our Team Section --- */
-.team-members {
+.team-members-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Allow items to wrap on desktop */
   justify-content: center;
   gap: 30px;
   margin-top: 40px;
+  padding: 0; /* Remove padding here for desktop */
+  overflow-x: visible; /* Ensure content is visible on desktop */
+  scroll-snap-type: none; /* Disable snap on desktop */
 }
 
 .team-member {
@@ -274,6 +277,17 @@ h1, h2, h3 {
   font-style: italic;
   margin-bottom: 15px;
 }
+
+/* Team Section Mobile Slide - Pagination */
+.team-pagination {
+  display: flex; /* Displayed by default, hidden by JS on desktop */
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+/* Reusing pagination-dot styles for team section */
+
 
 /* --- FAQ Section --- */
 .faq-container {
@@ -541,7 +555,7 @@ footer {
 
 /* --- Back to Top Button --- */
 .back-to-top {
-  display: none; /* Hidden by default */
+  display: none; /* Hidden by default, controlled by JS */
   position: fixed;
   bottom: 30px;
   right: 30px;
@@ -561,6 +575,31 @@ footer {
 
 .back-to-top:hover {
   background-color: #333333; /* Slightly lighter black on hover */
+  transform: translateY(-3px);
+}
+
+/* --- WhatsApp Button --- */
+.whatsapp-button {
+  position: fixed;
+  bottom: 90px; /* Position above back-to-top button */
+  right: 30px;
+  z-index: 98; /* Slightly lower z-index than back-to-top */
+  background-color: #25D366; /* WhatsApp green */
+  color: white;
+  padding: 15px 20px;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex; /* Use flex to center icon */
+  justify-content: center;
+  align-items: center;
+  text-decoration: none; /* Remove underline for link */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.whatsapp-button:hover {
+  background-color: #128C7E; /* Darker green on hover */
   transform: translateY(-3px);
 }
 
@@ -654,7 +693,7 @@ footer {
   }
 
   /* Services Section Mobile Slide */
-  .services-container { /* Renamed from .services-carousel for clarity on desktop */
+  .services-container {
     flex-wrap: nowrap; /* Prevent wrapping on mobile */
     overflow-x: auto; /* Enable horizontal scrolling */
     scroll-snap-type: x mandatory; /* Snap to items */
@@ -667,18 +706,26 @@ footer {
 
   .service {
     flex-shrink: 0; /* Prevent items from shrinking */
-    width: calc(100vw - 40px); /* 100vw - (padding-left + padding-right) of .services-carousel */
+    width: calc(100vw - 40px); /* 100vw - (padding-left + padding-right) of .services-container */
     scroll-snap-align: start; /* Snap to the start of each item */
   }
 
   /* Team Section Mobile */
-  .team-members {
-    flex-direction: column; /* Stack team members vertically */
-    align-items: center;
+  .team-members-container {
+    flex-wrap: nowrap; /* Prevent wrapping on mobile */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    scroll-snap-type: x mandatory; /* Snap to items */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    justify-content: flex-start; /* Align items to start for scrolling */
+    gap: 20px; /* Use gap for spacing between items */
+    padding: 0 20px 20px; /* Add horizontal padding to the carousel container itself */
+    box-sizing: border-box; /* Ensure padding is included in width */
   }
+
   .team-member {
-    width: 90%; /* Adjust width for mobile view */
-    max-width: 350px; /* Keep a max-width */
+    flex-shrink: 0; /* Prevent items from shrinking */
+    width: calc(100vw - 40px); /* 100vw - (padding-left + padding-right) of .team-members-container */
+    scroll-snap-align: start; /* Snap to the start of each item */
   }
 
   /* FAQ Section Mobile */
@@ -759,34 +806,34 @@ footer {
   }
 
   .footer-content {
-    max-height: 0; /* Hidden by default */
+    max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-    padding: 0 20px; /* Padding for content */
-    background-color: rgba(255, 255, 255, 0.02); /* Slightly darker content background */
+    padding: 0 20px;
+    background-color: rgba(255, 255, 255, 0.02);
   }
 
   .footer-content.active {
-    max-height: 500px; /* Large enough value to show all content */
-    padding-bottom: 15px; /* Add padding at bottom when expanded */
+    max-height: 500px;
+    padding-bottom: 15px;
   }
 
   .footer-column p,
   .footer-column ul {
-    text-align: left; /* Align text to left within accordion */
-    padding-left: 0; /* Remove default ul padding */
+    text-align: left;
+    padding-left: 0;
   }
 
   .social-icons {
-    justify-content: flex-start; /* Align social icons to left */
+    justify-content: flex-start;
     padding-top: 10px;
-    gap: 10px; /* Adjusted: Smaller gap for mobile social icons */
+    gap: 10px;
   }
 }
 
 @media (max-width: 480px) {
   body {
-    padding-top: 80px; /* Adjusted: Adjust padding for mobile navbar */
+    padding-top: 80px;
   }
   .hero {
     height: 250px;
@@ -798,13 +845,19 @@ footer {
     font-size: 1em;
   }
   .nav-logo {
-    max-height: 40px; /* Further reduced for very small screens */
-    max-width: 100px; /* Further reduced for very small screens */
+    max-height: 40px;
+    max-width: 100px;
   }
   .back-to-top {
     padding: 12px 15px;
     font-size: 20px;
     bottom: 20px;
     right: 20px;
+  }
+  .whatsapp-button {
+    bottom: 70px; /* Adjust position for smaller screens */
+    right: 20px;
+    padding: 12px 15px;
+    font-size: 20px;
   }
 }
