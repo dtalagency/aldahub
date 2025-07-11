@@ -842,15 +842,17 @@ footer {
     max-width: 100px;
   }
   .back-to-top {
-    padding: 12px 15px;
+    width: 45px; /* Smaller size for very small screens */
+    height: 45px; /* Smaller size for very small screens */
     font-size: 20px;
     bottom: 20px;
     right: 20px;
   }
   .whatsapp-button {
+    width: 45px; /* Match back-to-top size */
+    height: 45px; /* Match back-to-top size */
+    font-size: 20px;
     bottom: 70px; /* Adjust position for smaller screens */
     right: 20px;
-    padding: 12px 15px;
-    font-size: 20px;
   }
 }
